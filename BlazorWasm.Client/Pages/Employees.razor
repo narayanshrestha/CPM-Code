@@ -1,0 +1,49 @@
+﻿@page "/employees"
+@using CPM.Models
+@inject NavigationManager Navigation
+@inject IEmployeeService employeeService
+
+<PageTitle>Employees</PageTitle>
+
+<h3>Employee</h3>
+<button @onclick="AddEmployee">Add</button>
+
+@if (employees == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Department</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in employees)
+            {
+                <tr>
+                    <td>@employee.Id</td>
+                    <td>@employee.Name</td>
+                    <td>@employee.Department</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private List<Employee>? employees;
+
+    protected override async Task OnInitializedAsync()
+    {
+        employees = await employeeService.GetAllEmployeeAsync();
+    }
+
+    private void AddEmployee()
+    {
+        Navigation.NavigateTo("/addemployee");
+    }
+}

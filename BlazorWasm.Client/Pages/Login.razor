@@ -1,0 +1,49 @@
+﻿@page "/Login"
+@using BlazorWasm.Client.Models
+@inject HttpClient Http
+@inject IAuthenticationService AuthenticationService;
+@inject NavigationManager Navigation
+
+<h3>Login</h3>
+
+<EditForm Model="@model" OnValidSubmit="SubmitAsync">
+    <div>
+        <label for="username">Username:</label>
+        <InputText @bind-Value="@model.Username" id="username" name="username" required />
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <InputText type="password" @bind-Value="@model.Password" id="password" name="password" required />
+    </div>
+    <div>
+        <button type="submit">Login</button> <button type="submit" @onclick="RegisterUser">Register</button>
+    </div>
+</EditForm>
+
+@if (errorMessage is not null)
+{
+    <p class="error">@errorMessage</p>
+}
+
+@code {
+    private LoginModel model = new LoginModel();
+    private string? errorMessage;
+
+    private async Task SubmitAsync()
+    {
+        try
+        {
+            await AuthenticationService.LoginAsync(model);
+            Navigation.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private void RegisterUser()
+    {
+        Navigation.NavigateTo("/registeruser");
+    }
+}

@@ -1,0 +1,6 @@
+@CPM.API_HostAddress = http://localhost:5073
+
+GET {{CPM.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

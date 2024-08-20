@@ -1,0 +1,61 @@
+﻿@page "/registeruser"
+@using System.ComponentModel.DataAnnotations
+@using BlazorWasm.Client.Models
+@inject IAuthenticationService AuthenticationService;
+@inject NavigationManager Navigation
+
+<PageTitle>Register User</PageTitle>
+
+<h3>Register User</h3>
+
+<EditForm Model="@user" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <InputText id="name" class="form-control" @bind-Value="user.Username" />
+        <ValidationMessage For="@(() => user.Username)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Email</label>
+        <InputText id="name" class="form-control" @bind-Value="user.Email" />
+        <ValidationMessage For="@(() => user.Email)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Password</label>
+        <InputText id="department" type="password" class="form-control" @bind-Value="user.Password" />
+        <ValidationMessage For="@(() => user.Password)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@if (errorMessage is not null)
+{
+    <p class="error">@errorMessage</p>
+}
+
+@code {
+    private RegistrationModel user = new RegistrationModel();
+    private string? errorMessage;
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            var result = await AuthenticationService.RegisterAsync(user);
+            if (result)
+                Navigation.NavigateTo("/login");
+            else
+                errorMessage = $"Something went wrong...";
+
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+}

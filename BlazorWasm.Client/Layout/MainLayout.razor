@@ -1,0 +1,54 @@
+﻿@inherits LayoutComponentBase
+@inject IAuthenticationService AuthenticationService;
+@inject NavigationManager Navigation
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            @if (isLoggedIn)
+            {
+                <span> Welcome @username! <a @onclick="LogoutAsync">Logout</a></span>
+            }
+            else
+            {
+                <NavLink href="login">Login</NavLink>
+                <NavLink href="registeruser">Register</NavLink>
+            }
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private string? username;
+    private bool isLoggedIn => username is not null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        if (!isLoggedIn)
+            Navigation.NavigateTo("/login");
+
+        AuthenticationService.LoginChange += name =>
+        {
+            username = name;
+            StateHasChanged();
+        };
+    }
+
+
+
+    private async Task LogoutAsync()
+    {
+        await AuthenticationService.LogoutAsync();
+        Navigation.NavigateTo("/login");
+    }
+}

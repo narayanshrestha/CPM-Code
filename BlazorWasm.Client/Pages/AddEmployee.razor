@@ -1,0 +1,64 @@
+﻿@page "/addemployee"
+@using System.ComponentModel.DataAnnotations
+@using BlazorWasm.Client.Models
+@inject HttpClient Http
+@inject IEmployeeService employeeService
+
+<PageTitle>Add Employee</PageTitle>
+
+<h3>Add Employee</h3>
+
+<EditForm Model="@emp" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <InputText id="name" class="form-control" @bind-Value="emp.Name" />
+        <ValidationMessage For="@(() => emp.Name)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Department</label>
+        <InputText id="department" type="department" class="form-control" @bind-Value="emp.Department" />
+        <ValidationMessage For="@(() => emp.Department)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@if (isSubmitted)
+{
+    <div class="alert alert-success mt-3" role="alert">
+        Form submitted successfully!
+    </div>
+}
+
+@code {
+    private EmployeeModel emp = new();
+    private bool isSubmitted = false;
+    private string errorMessage = string.Empty;
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            var result = await employeeService.AddEmployeeAsync(emp);
+
+            if (result)
+            {
+                isSubmitted = true;
+                emp.Name = string.Empty;
+                emp.Department = string.Empty;
+            }
+            else
+            {
+                errorMessage = "There was an error submitting the form.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+}
